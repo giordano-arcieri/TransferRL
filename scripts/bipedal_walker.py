@@ -1,4 +1,6 @@
 from gym.envs.box2d.bipedal_walker import *
+from gym.envs.registration import register
+
 '''
     BipedalWalkerEnv is a custom environment that inherits from the BipedalWalker environm. 
     And allows you to set the bumpiness and friction of the terrain in the environment.
@@ -208,3 +210,10 @@ class BipedalWalkerEnv(BipedalWalker):
                 poly += [(poly[1][0], 0), (poly[0][0], 0)]
                 self.terrain_poly.append((poly, color))
             self.terrain.reverse()
+
+
+
+register(
+    id='BipedalWalkerEnvCustom-v0',  # Unique ID for your environment
+    entry_point='bipedal_walker:BipedalWalkerEnv',
+)

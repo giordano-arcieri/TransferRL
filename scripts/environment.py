@@ -21,7 +21,7 @@ for S in SLIPPERY_SETTINGS:
         print(f"Friction: {S}, Bumpiness: {B}")
        
         # Create the BipedalWalker environment with render_mode
-        env = BipedalWalkerEnv(render_mode='human', hardcore=False, bumpiness=B, friction=S)
+        env = gym.make('BipedalWalkerEnvCustom-v0', render_mode='human', hardcore=False, bumpiness=B, friction=S)
 
 
         # Reset the environment to start
