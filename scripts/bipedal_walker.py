@@ -1,5 +1,6 @@
-from gym.envs.box2d.bipedal_walker import *
-from gym.envs.registration import register
+from gymnasium.envs.box2d.bipedal_walker import *
+from gymnasium.envs.registration import register
+from typing import Optional
 
 '''
     BipedalWalkerEnv is a custom environment that inherits from the BipedalWalker environm. 
@@ -212,8 +213,10 @@ class BipedalWalkerEnv(BipedalWalker):
             self.terrain.reverse()
 
 
-
+print("REGISTERING BipedalWalkerEnvCustom-v0")
 register(
-    id='BipedalWalkerEnvCustom-v0',  # Unique ID for your environment
-    entry_point='bipedal_walker:BipedalWalkerEnv',
+    # The `id` parameter corresponds to the name of the environment, with the syntax as follows:
+    # `(namespace)/(env_name)-v(version)` where `namespace` is optional.
+    id='BipedalWalkerEnvCustom-v0',  #  id: The environment id
+    entry_point='bipedal_walker:BipedalWalkerEnv' # entry_point: The entry point for creating the environment
 )
