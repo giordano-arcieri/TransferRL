@@ -1,6 +1,5 @@
 import gym
 import numpy as np
-from bipedal_walker import BipedalWalkerEnv
 
 VERY_SLIPPERY = 0.1
 SLIPPERY = 0.2
