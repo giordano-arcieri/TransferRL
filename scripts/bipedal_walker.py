@@ -5,12 +5,17 @@ from typing import Optional
 '''
     BipedalWalkerEnv is a custom environment that inherits from the BipedalWalker environm. 
     And allows you to set the bumpiness and friction of the terrain in the environment.
+    It also changes the reward system to penalize the use of only one leg. (To incentivize human-like walking)
+
+    This can be done using wrappers and that is the recommended way to do it. 
+    However, I cant really find a way to edit the friction as it is a global variable. 
+    Creating a custom environment allows me more control and achives the same result.
     
     I wanted to be able to tweak bumpiness and friction so I created a class that allows you to set them 
     in the __init__.
 
     The __init__ method takes in the following parameters:
-        - render_mode: str = "human" - The mode to render the environment. Default is "human".
+        - render_mode: str = None - The mode to render the environment. Default is None.
         - hardcore: bool = False - Whether to use the hardcore version of the environment. Default is False.
         - bumpiness: int = 1 - The bumpiness of the terrain. Default is 1. [Must be between 0 and 10]
         - friction: int = 0.7 - The friction of the terrain. Default is 0.7. [Must be between 0.1 and 5]
@@ -19,6 +24,11 @@ from typing import Optional
         - checks if the bumpiness and friction are within the valid range and raises a ValueError if not.
         - sets the bumpiness and friction 
         - calls the super.__init__(render_mode, hardcore) to initialize the BipedalWalker environment.
+    
+    
+    This class overrides the _generate_terrain method of the BipedalWalker class to set the bumpiness and friction of the terrain.
+    Additionally I wanted to be able to edit the rewards since with the current system the robot will learn ro walk only using one leg
+    so this class also override the step method to change the reward, adding a penalty for using only one leg.
     
 '''
 
@@ -36,9 +46,9 @@ class BipedalWalkerEnv(BipedalWalker):
     
         Parameters: 
 
-        render_mode: str = "human":
+        render_mode: str = None:
             '''
-                The mode to render the environment. Default is "human".
+                The mode to render the environment. Default is None.
                 This is the same as the render_mode parameter in the BipedalWalker class.
             '''
 
@@ -64,18 +74,12 @@ class BipedalWalkerEnv(BipedalWalker):
         The BipedalWalkerEnv class is initialized with the specified bumpiness and friction. and you can call each method of the BipedalWalker class.
         Only generate_terrian method is overriden to set the bumpiness and friction of the terrain.
     """
-    def __init__(self, render_mode: Optional[str] = "human", hardcore: bool = False, bumpiness: int = 1, friction: int = 0.7):
-
+    def __init__(self, render_mode: Optional[str] = None, hardcore: bool = False, bumpiness: int = 1, friction: int = 0.7):
+        
         print(f"Initiating class with: {{ bumpiness: {bumpiness}, friction: {friction} }} ")
-        if(bumpiness < MIN_BUMPINESS or bumpiness > MAX_BUMPINESS):
-            raise ValueError(f"bumpiness must be between {MIN_BUMPINESS} and {MAX_BUMPINESS}")
 
-        if(friction < MIN_FRICTION or friction > MAX_FRICTION):
-            raise ValueError(f"friction must be between {MIN_FRICTION} and {MAX_FRICTION}")
-
-
-        self.bumpiness = bumpiness
-        self.friction = friction
+        self.bumpiness = np.clip(bumpiness, MIN_BUMPINESS, MAX_BUMPINESS)
+        self.friction = np.clip(friction, MIN_FRICTION, MAX_FRICTION)
 
         global FRICTION
         FRICTION = friction
@@ -83,6 +87,18 @@ class BipedalWalkerEnv(BipedalWalker):
         
         super().__init__(render_mode=render_mode, hardcore=hardcore)
     
+
+    '''
+    '''
+    def step(self, action):
+        observation, reward, terminated, truncated, info = super().step(action)
+        penalty = 0.1
+        leg1 = observation[4:8]
+        leg2 = observation[9:13]
+        leg1contact = observation[8]
+        leg2contact = observation[13]
+        
+
     '''
     '''
     def _generate_terrain(self, hardcore):
