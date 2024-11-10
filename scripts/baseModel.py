@@ -25,37 +25,72 @@ class Agent():
         pass
 
 
+def runSimulation(model: PPO, eval_times: int = 1):
+    # Evaluate the model
+        eval_env = gym.make('BipedalWalker-v3', render_mode='human')
+        for i in range(eval_times):
+            obs, _ = eval_env.reset()
+
+            done = False
+            time = 0
+            print("Running simulation: ", i + 1)
+            while not done and time < 1000:
+                if(time % 100 == 0):
+                    print("Time: ", time)
+                time += 1
+                action, _states = model.predict(obs)
+                obs, _reward, done, _T, _info = eval_env.step(action)
+
+                eval_env.render()
+        eval_env.close()
+
+
 def main():
-    env = make_vec_env('BipedalWalker-v3', n_envs=16)
-    model = PPO(
-    policy = 'MlpPolicy',
-    env = env,
-    n_steps = 2048,
-    batch_size = 128,
-    n_epochs = 6,
-    gamma = 0.999,
-    gae_lambda = 0.98,
-    ent_coef = 0.01,
-    verbose=1)
+   
 
     traing = False
-    model_name = "ppo5millionIt-v3.zip"
+    model_name = "ppo3p1millionIt.zip"
 
     if traing:
-        # Train the model
-        itaraions = 5_000_000
-        model.learn(total_timesteps=itaraions)
+        
+        env = make_vec_env('BipedalWalker-v3', n_envs=16)
+        model = PPO(
+            policy = 'MlpPolicy',
+            env = env,
+            n_steps = 2048,
+            batch_size = 128,
+            n_epochs = 6,
+            gamma = 0.999,
+            gae_lambda = 0.98,
+            ent_coef = 0.01,
+            verbose=1)
 
+        # Train the model
+        Total_timesteps = 4_000_000
+        show_times = 4
+        iteraions = Total_timesteps // show_times
+
+        for i in range(4):
+            print("Training model for ", iteraions, " iterations")
+            model.learn(total_timesteps=iteraions)
+
+            if(i == 3): # Don't evaluate the model on the first iteration
+                print("evaluating model")
+                input("Press Enter to continue...")
+                runSimulation(model, 3)
+        
+            
         # Save the model
         model.save(model_name)
-    
+        env.close()
 
+    
     else:
-        # Load the model
-        model.load(model_name)
         # Evaluate the model
         eval_env = gym.make('BipedalWalker-v3', render_mode='human')
-        while True:
+        # Load the model
+        model = PPO.load(model_name, env=eval_env)
+        for i in range(30):
             obs, _ = eval_env.reset()
 
             done = False
@@ -67,6 +102,7 @@ def main():
 
                 eval_env.render()
 
+        eval_env.close()
 
 if __name__ == "__main__":
     main()
