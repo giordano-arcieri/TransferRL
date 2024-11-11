@@ -84,6 +84,7 @@ class BipedalWalkerEnv(BipedalWalker):
         global FRICTION
         FRICTION = friction
         
+        self.last_leg_contact = None
         
         super().__init__(render_mode=render_mode, hardcore=hardcore)
     
@@ -92,12 +93,23 @@ class BipedalWalkerEnv(BipedalWalker):
     '''
     def step(self, action):
         observation, reward, terminated, truncated, info = super().step(action)
-        penalty = 0.1
-        leg1 = observation[4:8]
-        leg2 = observation[9:13]
-        leg1contact = observation[8]
-        leg2contact = observation[13]
+        step_reward: float = 0.3
+
+        # Leg data from observation
+        leg1kneeSpeed = observation[7]
+        leg2kneeSpeed = observation[12]
+        leg1contact: bool = observation[8]  
+        leg2contact: bool = observation[13]
+
+        # check if the speeds are opposite
+        if (leg1kneeSpeed > 0 and leg2kneeSpeed < 0) or (leg1kneeSpeed < 0 and leg2kneeSpeed > 0):
+            reward += step_reward
+
+        # Update last_leg_contact
+        self.last_leg_contact = current_leg_contact
+
         
+        return observation, reward, terminated, truncated, info
 
     '''
     '''

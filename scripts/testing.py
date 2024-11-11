@@ -46,23 +46,23 @@ env.close()
 '''
  The env returns a state:
          state = [
-            self.hull.angle,  # Normal angles up to 0.5 here, but sure more is possible.
-            2.0 * self.hull.angularVelocity / FPS,
-            0.3 * vel.x * (VIEWPORT_W / SCALE) / FPS,  # Normalized to get -1..1 range
-            0.3 * vel.y * (VIEWPORT_H / SCALE) / FPS,
-            self.joints[0].angle,
+            0: self.hull.angle,  # Normal angles up to 0.5 here, but sure more is possible.
+            1: 2.0 * self.hull.angularVelocity / FPS,
+            2: 0.3 * vel.x * (VIEWPORT_W / SCALE) / FPS,  # Normalized to get -1..1 range
+            3: 0.3 * vel.y * (VIEWPORT_H / SCALE) / FPS,
+            4: self.joints[0].angle,
             # This will give 1.1 on high up, but it's still OK (and there should be spikes on hitting the ground, that's normal too)
-            self.joints[0].speed / SPEED_HIP,
-            self.joints[1].angle + 1.0,
-            self.joints[1].speed / SPEED_KNEE,
-            1.0 if self.legs[1].ground_contact else 0.0,
-            self.joints[2].angle,
-            self.joints[2].speed / SPEED_HIP,
-            self.joints[3].angle + 1.0,
-            self.joints[3].speed / SPEED_KNEE,
-            1.0 if self.legs[3].ground_contact else 0.0,
+            5: self.joints[0].speed / SPEED_HIP,
+            6: self.joints[1].angle + 1.0,
+            7: self.joints[1].speed / SPEED_KNEE,
+            8: 1.0 if self.legs[1].ground_contact else 0.0,
+            9: self.joints[2].angle,
+            10: self.joints[2].speed / SPEED_HIP,
+            11: self.joints[3].angle + 1.0,
+            12: self.joints[3].speed / SPEED_KNEE,
+            13: 1.0 if self.legs[3].ground_contact else 0.0,
         ]
     
     return np.array(state, dtype=np.float32), reward, terminated, False, {}
-
+            
 '''

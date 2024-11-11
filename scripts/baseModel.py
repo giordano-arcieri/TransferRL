@@ -3,6 +3,8 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3 import PPO
 import numpy as np
 
+import bipedal_walker
+
 class Simulation():
     def __init__(self, env_id: str = 'BipedalWalkerEnvCustom-v0', render: bool = False, bumpiness: float = 0.0, friction: float = 0.0):
         if(render):
@@ -27,7 +29,7 @@ class Agent():
 
 def runSimulation(model: PPO, eval_times: int = 1):
     # Evaluate the model
-        eval_env = gym.make('BipedalWalker-v3', render_mode='human')
+        eval_env = gym.make('BipedalWalkerEnvCustom-v0', render_mode='human')
         for i in range(eval_times):
             obs, _ = eval_env.reset()
 
@@ -48,12 +50,12 @@ def runSimulation(model: PPO, eval_times: int = 1):
 def main():
    
 
-    traing = False
-    model_name = "ppo3p1millionIt.zip"
+    traing = True
+    model_name = "PPOModels/ppo4million_wlegRew.zip"
 
     if traing:
         
-        env = make_vec_env('BipedalWalker-v3', n_envs=16)
+        env = make_vec_env('BipedalWalkerEnvCustom-v0', n_envs=16)
         model = PPO(
             policy = 'MlpPolicy',
             env = env,
