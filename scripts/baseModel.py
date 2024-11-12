@@ -2,6 +2,7 @@ import gymnasium as gym
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3 import PPO
 import numpy as np
+import os
 
 import bipedal_walker
 
@@ -27,9 +28,9 @@ class Agent():
         pass
 
 
-def runSimulation(model: PPO, eval_times: int = 1):
+def runSimulation(envToRun: str, model: PPO, eval_times: int = 1):
     # Evaluate the model
-        eval_env = gym.make('BipedalWalkerEnvCustom-v0', render_mode='human')
+        eval_env = gym.make(envToRun, render_mode='human')
         for i in range(eval_times):
             obs, _ = eval_env.reset()
 
@@ -46,65 +47,71 @@ def runSimulation(model: PPO, eval_times: int = 1):
                 eval_env.render()
         eval_env.close()
 
+        
+def train(envToTrainOn: str, totalTimeSteps: int, showInterval: int, loadModelTo_FilePath: str):
+    # Create the 16 environments
+    env = make_vec_env(envToTrainOn, n_envs=16)
+    model = PPO(
+        policy = 'MlpPolicy',
+        env = env,
+        n_steps = 2048,
+        batch_size = 128,
+        n_epochs = 6,
+        gamma = 0.999,
+        gae_lambda = 0.98,
+        ent_coef = 0.01,
+        verbose=1)
+
+    # Train the model
+    iteraions = totalTimeSteps // showInterval
+
+    for i in range(4):
+        print("Training model for ", iteraions, " iterations")
+        model.learn(total_timesteps=iteraions)
+
+        if(i == 0): # Don't evaluate the model on the first iteration
+            print("evaluating model")
+            input("Press Enter to continue...")
+            runSimulation(envToTrainOn, model, 1)
+    
+    # Save the model
+    model.save(loadModelTo_FilePath)
+    env.close()
+
+def eval_model(envToEvaluate: str, getModelFrom_FilePath:str , times: int = 3):
+    # Load and simulate the model
+    runSimulation(envToEvaluate, PPO.load(getModelFrom_FilePath), times)
+
 
 def main():
    
 
-    traing = False
-    model_name = "PPOModels/ppo4million_legRewoppSignHipandKnee.zip"
+    traing: bool = False
+    
+    model_FilePath = "PPOModels/4millionIt/LegReward/oppSignKneeandHip.zip"
+
+    # Check if the model file path is valid
+    assert os.path.isfile(model_FilePath), f"File not found: {model_FilePath}"
+
+    envName: str = 'BipedalWalkerEnvCustom-v0'
+
+    # Check if the environment name is valid
+    assert envName in gym.envs.registry, f"Invalid environment name: {envName}"
+
 
     if traing:
+        # Train a model using specified environment, total time steps, and show interval 
+        # and save the model to the specified file path
+        train(envToTrainOn=envName, 
+              totalTimeSteps=4_000_000, 
+              showInterval=1000000, 
+              loadModelTo_FilePath=model_FilePath)
         
-        env = make_vec_env('BipedalWalkerEnvCustom-v0', n_envs=16)
-        model = PPO(
-            policy = 'MlpPolicy',
-            env = env,
-            n_steps = 2048,
-            batch_size = 128,
-            n_epochs = 6,
-            gamma = 0.999,
-            gae_lambda = 0.98,
-            ent_coef = 0.01,
-            verbose=1)
-
-        # Train the model
-        Total_timesteps = 4_000_000
-        show_times = 4
-        iteraions = Total_timesteps // show_times
-
-        for i in range(4):
-            print("Training model for ", iteraions, " iterations")
-            model.learn(total_timesteps=iteraions)
-
-            if(i == 3): # Don't evaluate the model on the first iteration
-                print("evaluating model")
-                input("Press Enter to continue...")
-                runSimulation(model, 3)
-        
-            
-        # Save the model
-        model.save(model_name)
-        env.close()
-
     
     else:
-        # Evaluate the model
-        eval_env = gym.make('BipedalWalkerEnvCustom-v0', render_mode='human')
-        # Load the model
-        model = PPO.load(model_name, env=eval_env)
-        for i in range(30):
-            obs, _ = eval_env.reset()
+        # Evaluate the model using the specified environment and model file path
+        eval_model(envToEvaluate=envName, getModelFrom_FilePath=model_FilePath, times=3)
 
-            done = False
-            time = 0
-            while not done and time < 1000:
-                time += 1
-                action, _states = model.predict(obs)
-                obs, _reward, done, _T, _info = eval_env.step(action)
-
-                eval_env.render()
-
-        eval_env.close()
 
 if __name__ == "__main__":
     main()
