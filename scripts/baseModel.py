@@ -50,8 +50,8 @@ def runSimulation(model: PPO, eval_times: int = 1):
 def main():
    
 
-    traing = True
-    model_name = "PPOModels/ppo4million_wlegRew.zip"
+    traing = False
+    model_name = "PPOModels/ppo4million_legRewoppSignHipandKnee.zip"
 
     if traing:
         
@@ -89,7 +89,7 @@ def main():
     
     else:
         # Evaluate the model
-        eval_env = gym.make('BipedalWalker-v3', render_mode='human')
+        eval_env = gym.make('BipedalWalkerEnvCustom-v0', render_mode='human')
         # Load the model
         model = PPO.load(model_name, env=eval_env)
         for i in range(30):
