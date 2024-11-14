@@ -94,48 +94,14 @@ class BipedalWalkerEnv(BipedalWalker):
     
 
     '''
+        The step method is overriden to change the reward system.
     '''
     def step(self, action):
-        observation, reward, terminated, truncated, info = super().step(action)
-        drag_treshold: int = 30
-        step_reward: float = 0.15
-        drag_penalty: float = 0.5
-
-        # Leg data from observation
-        leg1kneeSpeed = observation[7]
-        leg1hipSpeed = observation[5]
-        leg2kneeSpeed = observation[12]
-        leg2hipSpeed = observation[10]
-        leg1contact: bool = observation[8]  
-        leg2contact: bool = observation[13]
-
-        # print(f"Leg1: ( Knee Speed: {leg1kneeSpeed}, Hip Speed: {leg1hipSpeed}, Contact: {leg1contact}")
-        # print(f"Leg2: ( Knee Speed: {leg2kneeSpeed}, Hip Speed: {leg2hipSpeed}, Contact: {leg2contact}")
-        # print("--------------------------------------------------------------")
-
-        # check if the speeds are opposite
-        if (leg1hipSpeed * leg2hipSpeed < 0 and abs(leg1hipSpeed) > 0.3 and abs(leg2hipSpeed) > 0.3):
-            reward += step_reward
-        if (leg1kneeSpeed * leg2kneeSpeed < 0 and abs(leg1kneeSpeed) > 0.3 and abs(leg2kneeSpeed) > 0.3):
-            reward += step_reward
-            # print("Step reward: ", step_reward)
-        else:
-            pass
-            # print("Step Reward: ", 0)
-
-        if (leg1contact and leg2contact):
-            reward -= drag_penalty
-        # self.leftLegContact = self.leftLegContact + 1 if leg1contact else 0
-        # self.rightLegContact = self.rightLegContact + 1 if leg2contact else 0
-        # if(self.leftLegContact > drag_treshold):
-        #     reward -= drag_penalty
-        # if(self.rightLegContact > drag_treshold):
-        #     reward -= drag_penalty
-        
-        
+        observation, reward, terminated, truncated, info = super().step(action)        
         return observation, reward, terminated, truncated, info
 
     '''
+        The _generate_terrain method is overriden to set the bumpiness and friction of the terrain.
     '''
     def _generate_terrain(self, hardcore):
             GRASS, STUMP, STAIRS, PIT, _STATES_ = range(5)
