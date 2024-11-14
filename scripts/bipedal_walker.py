@@ -78,12 +78,18 @@ class BipedalWalkerEnv(BipedalWalker):
         
         print(f"Initiating class with: {{ bumpiness: {bumpiness}, friction: {friction} }} ")
 
+        # Initialize the bumpiness and friction
         self.bumpiness = np.clip(bumpiness, MIN_BUMPINESS, MAX_BUMPINESS)
         self.friction = np.clip(friction, MIN_FRICTION, MAX_FRICTION)
 
         global FRICTION
         FRICTION = friction
-                
+
+        # Some variables
+        self.leftLegContact: int = 0
+        self.rightLegContact: int = 0
+
+        # Call the super constructor        
         super().__init__(render_mode=render_mode, hardcore=hardcore)
     
 
@@ -91,7 +97,9 @@ class BipedalWalkerEnv(BipedalWalker):
     '''
     def step(self, action):
         observation, reward, terminated, truncated, info = super().step(action)
-        step_reward: float = 0.3
+        drag_treshold: int = 30
+        step_reward: float = 0.15
+        drag_penalty: float = 0.5
 
         # Leg data from observation
         leg1kneeSpeed = observation[7]
@@ -101,12 +109,29 @@ class BipedalWalkerEnv(BipedalWalker):
         leg1contact: bool = observation[8]  
         leg2contact: bool = observation[13]
 
-        # check if the speeds are opposite
-        if (leg1kneeSpeed > 0 and leg2kneeSpeed < 0) or (leg1kneeSpeed < 0 and leg2kneeSpeed > 0):
-            reward += step_reward
+        # print(f"Leg1: ( Knee Speed: {leg1kneeSpeed}, Hip Speed: {leg1hipSpeed}, Contact: {leg1contact}")
+        # print(f"Leg2: ( Knee Speed: {leg2kneeSpeed}, Hip Speed: {leg2hipSpeed}, Contact: {leg2contact}")
+        # print("--------------------------------------------------------------")
 
-        if (leg1hipSpeed > 0 and leg2hipSpeed < 0) or (leg1hipSpeed < 0 and leg2hipSpeed > 0):
+        # check if the speeds are opposite
+        if (leg1hipSpeed * leg2hipSpeed < 0 and abs(leg1hipSpeed) > 0.3 and abs(leg2hipSpeed) > 0.3):
             reward += step_reward
+        if (leg1kneeSpeed * leg2kneeSpeed < 0 and abs(leg1kneeSpeed) > 0.3 and abs(leg2kneeSpeed) > 0.3):
+            reward += step_reward
+            # print("Step reward: ", step_reward)
+        else:
+            pass
+            # print("Step Reward: ", 0)
+
+        if (leg1contact and leg2contact):
+            reward -= drag_penalty
+        # self.leftLegContact = self.leftLegContact + 1 if leg1contact else 0
+        # self.rightLegContact = self.rightLegContact + 1 if leg2contact else 0
+        # if(self.leftLegContact > drag_treshold):
+        #     reward -= drag_penalty
+        # if(self.rightLegContact > drag_treshold):
+        #     reward -= drag_penalty
+        
         
         return observation, reward, terminated, truncated, info
 
