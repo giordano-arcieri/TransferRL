@@ -1,23 +1,31 @@
+import sys
+print(sys.path)
+
 import gymnasium as gym
-from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3 import PPO
-import numpy as np
+from Package import bipedal_walker
 import os
+from Package.ModelTester import ModelTester
+from typing import Dict
 
-import TransferRL.bipedal_walker as bipedal_walker
-import json
-from TransferRL.Simulation import Simulation
-from TransferRL.PPOAgent import PPOAgent
-import torch
+def main():
+    
+    # Define
+    testing_env_id = "BipedalWalkerEnvCustom-v0"
+    testing_sim = 'base'
+    model_path = '../PPOModels/BaseModel_20M/baseModel_20000000.zip'
+    
+    # Check if the model exists
+    assert os.path.exists(model_path), f"Model not found at {model_path}"
+    
+    # Check if the environment name is valid
+    assert testing_env_id in gym.envs.registry, f"Invalid environment name: {testing_env_id}"
 
-def runSimulation(envToRun: str, model: PPO, eval_times: int = 1):
-    sim = Simulation(env_id=envToRun, render=True)
-    sim.runSimulation(model, eval_times)
+    # Evaluate the model
+    model_tester = ModelTester(model_path, testing_env_id, testing_sim)
+    stats: Dict[str, float] = model_tester.run()
+    
+    # Save the statistics
+    print(f"Stats of \"{model_path}\": {stats}")
 
-        
-
-def eval_model(envToEvaluate: str, getModelFrom_FilePath:str , times: int = 3):
-    # Load and simulate the model
-    runSimulation(envToEvaluate, PPO.load(getModelFrom_FilePath), times)
-
-
+if __name__ == '__main__':
+    main()

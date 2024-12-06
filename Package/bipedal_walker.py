@@ -236,5 +236,6 @@ register(
     # The `id` parameter corresponds to the name of the environment, with the syntax as follows:
     # `(namespace)/(env_name)-v(version)` where `namespace` is optional.
     id='BipedalWalkerEnvCustom-v0',  #  id: The environment id
-    entry_point='bipedal_walker:BipedalWalkerEnv' # entry_point: The entry point for creating the environment
+    entry_point='Package.bipedal_walker:BipedalWalkerEnv' # entry_point: The entry point for creating the environment
 )
+

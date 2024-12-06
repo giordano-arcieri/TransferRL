@@ -37,6 +37,8 @@ class Simulation:
     
     
     def __del__(self):
-        self.env.close()
-        self.env = None
+        pass
+        # if self.env is not None:
+        #     self.env.close()
+        #     self.env = None
 

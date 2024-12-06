@@ -3,8 +3,8 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3 import PPO
 import os
 
-import TransferRL.bipedal_walker as bipedal_walker
-from TransferRL.PPOAgent import PPOAgent
+import Package.bipedal_walker as bipedal_walker
+from Package.PPOAgent import PPOAgent
 import torch
 import json
 
@@ -63,7 +63,7 @@ def train(envToTrainOn: str, totalTimeSteps: int, interval: int, loadModelTo_Fil
 def main():
    
     # Define the model file path and the environment name
-    model_FilePath: str = "FinalModels/baseModel.zip"
+    model_FilePath: str = "../PPOModels/BaseModel/baseModel.zip"
     envName: str = 'BipedalWalkerEnvCustom-v0'
 
     # Check if the model file already exists
@@ -78,7 +78,7 @@ def main():
     # Train the model
     train(envToTrainOn=envName, 
             totalTimeSteps=100_000_000, 
-            showInterval=1000000, 
+            interval=1000000, 
             loadModelTo_FilePath=model_FilePath)
         
 

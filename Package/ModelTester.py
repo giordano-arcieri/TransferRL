@@ -2,7 +2,7 @@
 import os
 import gymnasium as gym
 from stable_baselines3 import PPO
-from TransferRL.Simulation import Simulation 
+from Package.Simulation import Simulation 
 from typing import Dict
 
 '''
