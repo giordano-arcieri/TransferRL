@@ -5,6 +5,7 @@ from stable_baselines3.common.type_aliases import *
 from stable_baselines3.ppo.policies import ActorCriticPolicy
 from stable_baselines3.common.buffers import RolloutBuffer
 import gymnasium as gym
+from stable_baselines3.common.monitor import Monitor
 
 
 class PPOAgent(PPO):
@@ -41,7 +42,7 @@ class PPOAgent(PPO):
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
     ):
-        self.env = make_vec_env(env_id, n_envs=16)
+        self.env = make_vec_env(env_id, n_envs=16, wrapper_class=Monitor)
         super().__init__(
             policy=policy,
             env=self.env,
@@ -71,7 +72,27 @@ class PPOAgent(PPO):
             _init_setup_model=_init_setup_model,
         )
 
+
+    def get_episode_stats(self):
+        """
+        Retrieve aggregated episode statistics from all environments.
+        """
+        # Get episode rewards and lengths from each environment
+        rewards = self.env.env_method("get_episode_rewards")
+        lengths = self.env.env_method("get_episode_lengths")
+
+        # Flatten the lists
+        all_rewards = [reward for env_rewards in rewards for reward in env_rewards]
+        all_lengths = [length for env_lengths in lengths for length in env_lengths]
+
+        # Compute statistics
+        ep_rew_mean = np.mean(all_rewards) if all_rewards else 0
+        ep_len_mean = np.mean(all_lengths) if all_lengths else 0
+
+        return {"ep_rew_mean": ep_rew_mean, "ep_len_mean": ep_len_mean}
+    
     def __del__(self):
-        self.env.close()
-        self.env = None
+        if hasattr(self, "env") and self.env is not None:
+            self.env.close()
+            self.env = None
         
