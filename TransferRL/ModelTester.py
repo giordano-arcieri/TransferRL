@@ -3,6 +3,7 @@ import os
 import gymnasium as gym
 from stable_baselines3 import PPO
 from TransferRL.Simulation import Simulation 
+from typing import Dict
 
 '''
 Class that returns the mean_reward of the model for a given environment
@@ -52,4 +53,22 @@ class ModelTester:
         else:
             raise RuntimeError("Invalid simulation type.")
 
+
+        # Initialize the simulation environment
+        self.sim = Simulation(env_id=testing_env_id, render=True, bumpiness=bumpiness, friction=friction)
+    
+    """
+        Run the simulation multiple times and compute the mean reward.
+
+        Parameters:
+        - eval_times (int): Number of evaluation runs. Default is 300.
+
+        Returns:
+        {
+            mean_reward (float): Mean reward obtained over all runs.
+            mean_steps (float): Mean number of steps taken over all runs.
+        }
+    """ 
+    def run(self, eval_times: int = 300) -> Dict[str, float]:
+        return self.sim.runSimulation(self.model, eval_times=eval_times, maxTime=10000)
         
