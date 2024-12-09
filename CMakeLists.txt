@@ -26,12 +26,6 @@ add_custom_target(RunTTM
     COMMENT "Running trainTransferModel.py"
 )
 
-# Run (fineToonModel.py)
-add_custom_target(RunTFM 
-    COMMAND PYTHONPATH=${CMAKE_SOURCE_DIR} ${PYTHON_EXECUTABLE} ${SCRIPTS_DIR}/fineToonModel.py 
-    COMMENT "Running fineToonModel.py"
-)
-
 # Run (evaluateBaseModel.py)
 add_custom_target(RunEBM 
     COMMAND PYTHONPATH=${CMAKE_SOURCE_DIR} ${PYTHON_EXECUTABLE} ${SCRIPTS_DIR}/evaluateBaseModel.py 
@@ -42,12 +36,6 @@ add_custom_target(RunEBM
 add_custom_target(RunETM 
     COMMAND PYTHONPATH=${CMAKE_SOURCE_DIR} ${PYTHON_EXECUTABLE} ${SCRIPTS_DIR}/evaluateTransferModel.py 
     COMMENT "Running evaluateTransferModel.py"
-)
-
-# Run (evaluateFineToonedModel.py)
-add_custom_target(RunEFM 
-    COMMAND PYTHONPATH=${CMAKE_SOURCE_DIR} ${PYTHON_EXECUTABLE} ${SCRIPTS_DIR}/evaluateFineToonedModel.py 
-    COMMENT "Running evaluateFineToonedModel.py"
 )
 
 

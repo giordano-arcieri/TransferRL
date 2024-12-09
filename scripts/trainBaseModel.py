@@ -48,12 +48,12 @@ def train(envToTrainOn: str, totalTimeSteps: int, interval: int, loadModelTo_Fil
         all_stats.append(stats)
         
         # Save model and stats
-        show(f"Saving model to FinalModels/baseModel2_Checkpoint{i}.zip")
-        model.save("FinalModels/baseModel_Checkpoint" + str(i) + ".zip")
+        show(f"Saving model to testCheckpoint{i}.zip")
+        model.save("testCheckpoint" + str(i) + ".zip")
         
         # Save statistics
         show(f"Saving stats to of iteration {i}. Stats: {stats}")
-        with open("FinalModelsStats/baseModel2_Checkpoint" + str(i) + ".json", "w") as f:
+        with open("testCheckpoint" + str(i) + ".json", "w") as f:
             json.dump(all_stats, f, indent=4)
     
     show(f"Training complete. Saving model to {loadModelTo_FilePath}")
@@ -63,7 +63,7 @@ def train(envToTrainOn: str, totalTimeSteps: int, interval: int, loadModelTo_Fil
 def main():
    
     # Define the model file path and the environment name
-    model_FilePath: str = "../PPOModels/BaseModel/baseModel.zip"
+    model_FilePath: str = "test.zip"
     envName: str = 'BipedalWalkerEnvCustom-v0'
 
     # Check if the model file already exists
