@@ -18,10 +18,11 @@ class Simulation:
             done: bool = False
             time: int = 0
             
-            print("Running simulation: ", i + 1)
+            if i % 50 == 0:
+                print("Running simulation: ", i + 1)
             while not done and time < maxTime:
-                if(time % 100 == 0):
-                    print("Time: ", time, "/", maxTime)
+                # if(time % 100 == 0):
+                    # print("Time: ", time, "/", maxTime)
                 time += 1
                 action, _states = model.predict(obs)
                 obs, reward, done, _T, _info = self.env.step(action)

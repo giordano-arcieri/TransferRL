@@ -14,9 +14,9 @@ returns:
 '''
 
 BASE_SIM_PROPERTIES = { 'bumpiness': 1.0, 'friction': 0.7 }
-BUMPY_SIM_PROPERTIES = { 'bumpiness': 10.0, 'friction': 0.7 }
+BUMPY_SIM_PROPERTIES = { 'bumpiness': 5.0, 'friction': 0.7 }
 SLIPPERY_SIM_PROPERTIES = { 'bumpiness': 1.0, 'friction': 0.1 }
-HARD_SIM_PROPERTIES = { 'bumpiness': 10.0, 'friction': 0.1 }
+HARD_SIM_PROPERTIES = { 'bumpiness': 5.0, 'friction': 0.1 }
 
 
 class ModelTester:
@@ -55,7 +55,7 @@ class ModelTester:
 
 
         # Initialize the simulation environment
-        self.sim = Simulation(env_id=testing_env_id, render=True, bumpiness=bumpiness, friction=friction)
+        self.sim = Simulation(env_id=testing_env_id, render=False, bumpiness=bumpiness, friction=friction)
     
     """
         Run the simulation multiple times and compute the mean reward.

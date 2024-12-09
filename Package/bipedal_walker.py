@@ -225,7 +225,8 @@ class BipedalWalkerEnv(BipedalWalker):
                 t.color1 = color
                 t.color2 = color
                 self.terrain.append(t)
-                color = (102, 153, 76)
+                # color = (82, 240, 255) # Blue
+                color = (102, 153, 76) # Green
                 poly += [(poly[1][0], 0), (poly[0][0], 0)]
                 self.terrain_poly.append((poly, color))
             self.terrain.reverse()

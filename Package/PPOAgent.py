@@ -17,6 +17,8 @@ class PPOAgent(PPO):
         self, 
         env_id: str,
         policy: Union[str, Type[ActorCriticPolicy]],
+        bumpiness: float = 1,
+        friction: float = 0.7,
         learning_rate: Union[float, Schedule] = 3e-4,
         n_steps: int = 2048,
         batch_size: int = 64,
@@ -42,7 +44,7 @@ class PPOAgent(PPO):
         device: Union[th.device, str] = "auto",
         _init_setup_model: bool = True,
     ):
-        self.env = make_vec_env(env_id, n_envs=16, wrapper_class=Monitor)
+        self.env = make_vec_env(env_id, n_envs=16, wrapper_class=Monitor, env_kwargs={"bumpiness": bumpiness, "friction": friction})
         super().__init__(
             policy=policy,
             env=self.env,
